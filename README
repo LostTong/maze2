@@ -1,0 +1,73 @@
+COSC1252/1254 - Programming Using C++, Sample Solution
+README file: Outlines any issues that students who view this solution
+need to be aware of.
+Created by Paul Miller for Programming Using C++, Semester 2, 2018
+==========================================================================
+
+You may use this solution as a starting point for your implementation
+of assignment 2, but this is not mandatory. The marking for assignment 2 
+will only apply to the requirements for that assignment although obviously
+there are general requirements that apply to both assignments.
+
+I have used some concepts in my implementation of this solution that we have
+not covered yet or we have just covered such as polymorphism and exception
+handling. I have included these so they can give you an idea of how these
+work in C++.
+
+Please note that this is not expected to be completely bug free as it has
+only gone through limited testing however if you do find a bug, feel free
+to report it and we will attempt to provide you with a bug fix as soon as
+we can.
+
+The important things you should take from this solution are good object-
+oriented design, robust error handling and a mixture of the use of structs
+and classes for various components. I do implement some information hiding
+but I prefer run time performance over what I view as unnecessary 
+information hiding and a proliferation of getters and setters. 
+
+You will notice that I have implemented some functions as part of the 
+class declaration and some are implemented in a separate .cpp file. The 
+limited getters or setters I have used are implemented inside the class
+they are declared for performance reasons. These functions will be included
+inline where they are called, avoiding runtime performance overheads. In 
+most cases the body of these functions is so small that they will not 
+increase the size of the binary executable.
+
+I have also made extensive use of namespaces. I like to use separate
+namespaces for each component or "part" of my implementation. This makes
+for a more modular program and it is clear from the namespace name where
+the file in question is stored. 
+
+I have avoided use of C functions. Generally if there is a way to do
+something in c++ it is safer than the C alternative (there are one or two
+exceptions to this, but this is generally true). This is particularly true
+when it comes to string manipulation. If you made use of any C functions
+in your assignment 1 solution then there will be a penalty for that due to
+this reason. The exception to this rule is often the cmath functions such
+as floor() or ceiling() and in fact you will find that I call some rounding
+functions from the cmath library for this reason as there is no better 
+alternative in c++.
+
+I have also avoided explicit memory allocation using the "new" keyword.
+In C++14, the introduction of std::make_unique() and std::make_shared()
+renders the use of the "new" keyword unnecessary. Use of these safe 
+pointers also makes your memory allocation more robust and removes the need
+to free memory. 
+
+Finally, I have provided implementations of recursive division using 
+both recursive and iterative solutions. The iterative solution simply uses
+a std::stack< std::tuple<> > to push regions onto the stack that need to
+be processed. The algorithm is still recursive but it is implemented in an
+iterative fashion.
+
+Don't get too hung up on whether my implementations of either the recursive
+or iterative algorithms is totally correct as graphics programming as such
+is not the focus of this course. The algorithm is basically correct but 
+probably could have been tweaked to more closely resemble other examples 
+you may have seen but I'm not too stressed about this issue. 
+
+Good luck with assignment 2. 
+
+Cheers
+
+Paul
