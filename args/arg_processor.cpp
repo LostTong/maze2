@@ -258,6 +258,6 @@ mazer2018::args::arg_processor::process_generate_argument(int& arg_count,
       throw action_failed("invalid generation request");
     }
   }
-  newact = std::make_unique<generate_action>(seed, width, height, use_stack);
+  newact = std::make_unique<generate_action>(seed, width, height, use_stack, mazer2018::data::generate_type::RECURSIVE);
   return std::move(newact);
 }

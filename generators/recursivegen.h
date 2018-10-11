@@ -1,6 +1,7 @@
 #include <chrono>
 #include <functional>
 #include <random>
+#include <ctime>
 #include "../constants/constants.h"
 #include "../data/maze.h"
 

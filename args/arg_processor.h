@@ -4,6 +4,7 @@
 #include <vector>
 #include "../constants/constants.h"
 #include "action.h"
+#include "../data/maze.h"
 
 /**
  * @file arg_processor.h defines the command line argument processor and

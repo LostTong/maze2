@@ -9,6 +9,7 @@ namespace data {
  * forwards declaration required to avoid a recursive include
  **/
 class maze;
+enum generate_type;
 }  // namespace data
 namespace args {
 /**
@@ -73,6 +74,9 @@ class generate_action : public action {
 
   bool stack;
 
+  // generator type
+  data::generate_type _gen_type;
+
  public:
   /**
    * default constructor - required to insert actions into an
@@ -80,35 +84,13 @@ class generate_action : public action {
    **/
   generate_action(void) {}
 
-#if 0
-            /**
-             * creates a generate_action based on a width and height
-             * being specified
-             **/
-            generate_action(unsigned width,unsigned height) 
-                : _seed(constants::ERROR), 
-                _width(width), _height(height)
-            {
-            }
-#endif
 
   /**
    * creates a generate_action based on the seed, width and
    * height being specified
    **/
-  generate_action(int seed, unsigned width, unsigned height, bool use_stack)
-      : _seed(seed), _width(width), _height(height), stack(use_stack) {}
-#if 0
-            /**
-             * creates a generate_action for when only the seed is 
-             * specified
-             **/
-            generate_action(int seed) : _seed(seed), 
-            _width(constants::DEFAULT_WIDTH), 
-            _height(constants::DEFAULT_HEIGHT)
-            {
-            }
-#endif
+  generate_action(int seed, unsigned width, unsigned height, bool use_stack, data::generate_type type)
+      : _seed(seed), _width(width), _height(height), stack(use_stack), _gen_type(type) {}
 
   virtual data::maze &do_action(data::maze &);
 };

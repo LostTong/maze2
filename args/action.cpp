@@ -14,6 +14,15 @@
  **/
 mazer2018::data::maze& mazer2018::args::generate_action::do_action(
     mazer2018::data::maze& m) {
+
+  // recursive
+	if (_gen_type == mazer2018::data::generate_type::RECURSIVE) {
+
+	}
+	else if (_gen_type == mazer2018::data::generate_type::PRIM) {
+
+	}
+
   // create the generator
   if (stack) {
     generators::recursivegen_stack generator(m, _width, _height, _seed);
