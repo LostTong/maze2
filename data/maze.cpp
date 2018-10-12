@@ -217,6 +217,9 @@ bool mazer2018::data::maze::valid_edge(const edge& e) const {
  * @return true when the file is successfully saved and false otherwise
  **/
 bool mazer2018::data::maze::save_svg(const std::string& name) {
+
+	return save_svg_func(name);
+
   // magnification changes with the size of the maze so we roughly
   // get an svg file that displays at the same size
   double magnification = MAXRES / std::max(_width - 1, _height - 1);
@@ -257,6 +260,139 @@ bool mazer2018::data::maze::save_svg(const std::string& name) {
     return false;
   }
   return out.good();
+}
+
+bool mazer2018::data::maze::save_svg_func(const std::string &name) {
+	std::fstream output(name, std::fstream::out | std::fstream::trunc);
+	if (!output.is_open())
+	{
+		std::cout << "Could not open file" << std::endl;
+		return false;
+	}
+
+	// header
+	int offset = 4;
+	int box_width = 20 * _width + offset;
+	int box_height = 20 * _height + offset;
+	output << "<svg width='" << box_width << "' ";
+	output << "height='" << box_height << "' ";
+	output << "xmlns='http://www.w3.org/2000/svg'>" << "\n";
+
+	output << "<rect width='" << box_width << "' height='" << box_height;
+	output << "' style='fill: black' />" << "\n";
+
+	std::vector<data::edge *> solve_edge;
+	std::vector<data::edge *> unsolve_edge;
+
+	for (int y = 0; y < _height; y++) {
+		for (int x = 0; x < _width; x++) {
+			for (int k = 0; k < _cells[x][y].adjacents.size(); k++) {
+				data::edge *cur_edge = &(_cells[x][y].adjacents[k]);
+				//std::cout << "cell " << x << ", " << y << std::endl;
+				if (cur_edge->is_solve){
+
+					solve_edge.push_back(cur_edge);
+				}
+				else {
+					unsolve_edge.push_back(cur_edge);
+				}
+			}
+		}
+	}
+
+	/*
+	unsolve_edge.clear();
+	unsolve_edge.push_back(&data::edge(0, 0, 1, 0));
+	unsolve_edge.push_back(&data::edge(0, 0, 0, 1));
+	unsolve_edge.push_back(&data::edge(1, 0, 1, 1));
+	*/
+	
+
+	//save path
+	for (auto *cur_edge : unsolve_edge)
+	{
+		save_svg_edge(cur_edge, output);
+	}
+	for (auto *cur_edge : solve_edge)
+	{
+		save_svg_edge(cur_edge, output);
+	}
+
+	// entry and exit
+	bool solved = !solve_edge.empty();
+	output << "<rect style='fill:";
+	if (solved)
+		output << "rgb(255, 0, 0)";
+	else
+		output << "rgb(255, 255, 255)";
+	int	edge_width = 16;
+	output << "' x='0' y='" << offset << "' width='" << edge_width;
+	output << "' height='" << edge_width << "'/>" << "\n";
+
+	output << "<rect style='fill:";
+	if (solved)
+		output << "rgb(255, 0, 0)";
+	else
+		output << "rgb(255, 255, 255)";
+	output << "' x='" << (box_width - edge_width - offset) << "' y='";
+	output << (box_height - edge_width - offset) << "' width='";
+	output << edge_width + offset;
+	output << "' height='" << edge_width << "'/>" << "\n";
+
+	output << "</svg>" << "\n";
+	output.close();
+	return true;
+}
+void mazer2018::data::maze::save_svg_edge(data::edge *edge, std::fstream & output) {
+	int x, y;
+	int edge_width, edge_height;
+
+	int x1 = edge->in_x;
+	int y1 = edge->in_y;
+	int x2 = edge->out_x;
+	int y2 = edge->out_y;
+	if (x1 < x2)
+	{
+		x = x1 * 20 + 4;
+		edge_width = 36;
+	}
+	else if (x1 > x2)
+	{
+		x = x2 * 20 + 4;
+		edge_width = 36;
+	}
+	else
+	{
+		x = x2 * 20 + 4;
+		edge_width = 16;
+	}
+
+	if (y1 < y2)
+	{
+		y = y1 * 20 + 4;
+		edge_height = 36;
+	}
+	else if (y1 > y2)
+	{
+		y = y2 * 20 + 4;
+		edge_height = 36;
+	}
+	else
+	{
+		y = y2 * 20 + 4;
+		edge_height = 16;
+	}
+
+	output << "<rect style='fill:";
+	if (edge->is_solve)
+		output << "rgb(255, 0, 0)";
+	else
+		output << "rgb(255, 255, 255)";
+	output << "' ";
+	output << " x='" << x;
+	output << "' y='" << y;
+	output << "' width='" << edge_width;
+	output << "' height='" << edge_height << "'/>" << "\n";
 }
 
 void mazer2018::data::maze::set_unvisited(void) {

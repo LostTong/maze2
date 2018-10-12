@@ -29,15 +29,6 @@ enum orientation {
   VERTICAL
 };
 
-/*
-* maze generate type
-*/
-enum generate_type {
-	// recursive generate
-	RECURSIVE,
-	// prim generate
-	PRIM
-};
 
 /**
  * ! (not) operator implemented for an orientation enumeration
@@ -114,6 +105,7 @@ struct edge {
       out_y;
   /// whether this edge has been visited in the current algorithm
   bool visited;
+  bool is_solve;
 
   /**
    * I needed to change the default initialisation of an edge
@@ -125,14 +117,14 @@ struct edge {
         in_y(constants::ERROR),
         out_x(constants::ERROR),
         out_y(constants::ERROR),
-        visited(false) {}
+        visited(false), is_solve(false) {}
 
   /**
    * need to provide a parameterised constructor if I provide
    * a default or it becomes hidden
    **/
   edge(int x1, int y1, int x2, int y2)
-      : in_x(x1), in_y(y1), out_x(x2), out_y(y2) {}
+      : in_x(x1), in_y(y1), out_x(x2), out_y(y2), visited(false), is_solve(false) {}
 };
 
 /**
@@ -155,19 +147,20 @@ struct cell {
   /// vector of edges that link to adjacent cells
   std::vector<edge> adjacents;
   bool is_visited;
+  cell *prev;
 
   /**
    * default constructor - initializes the adjacents vector to
    * a vector of size 4 and this cell's coordinates to an
    * empty location
    **/
-  cell(void) : x(constants::ERROR), y(constants::ERROR), adjacents(num_dirs), is_visited(false) {}
+  cell(void) : x(constants::ERROR), y(constants::ERROR), adjacents(num_dirs), is_visited(false), prev(nullptr){}
 
   /**
    * constructor which takes the coordinates of the cells and
    * initializes the adjacents vector to a size of 4.
    **/
-  cell(int _x, int _y) : x(_x), y(_y), adjacents(num_dirs), is_visited(false) {}
+  cell(int _x, int _y) : x(_x), y(_y), adjacents(num_dirs), is_visited(false), prev(nullptr) {}
 };
 
 struct HashFunc{
@@ -303,6 +296,9 @@ class maze {
    **/
   bool save_svg(const std::string&);
 
+  bool save_svg_func(const std::string&);
+  void save_svg_edge(data::edge *edge, std::fstream & output);
+
   /**
    * writes the svg prolog to a file.
    **/
@@ -373,7 +369,7 @@ class maze {
 		set();
 		~set();
 
-		void insert2(T *value);
+		void insert(T *value);
 		bool remove(T *value);
 		void clear();
 		int get_size() const;
@@ -405,7 +401,7 @@ class maze {
 
 	// insert
 	template <class T>
-	void set<T>::insert2(T *value)
+	void set<T>::insert(T *value)
 	{
 		value->is_visited = true;
 		set_map.insert({value, get_size() - 1 });
@@ -417,7 +413,9 @@ class maze {
 	void set<T>::clear()
 	{
 		set_map.clear();
-		set_stack.clear();
+		while (!set_stack.empty()) {
+			set_stack.pop();
+		}
 	}
 
 	// delete
@@ -435,7 +433,7 @@ class maze {
 
 	template <class ValueType>
 	int set<ValueType>::get_size() const {
-		return map_set.size();
+		return set_map.size();
 	}
 
 	template <class T>

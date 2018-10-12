@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include "../constants/constants.h"
+
 #pragma once
 namespace mazer2018 {
 namespace data {
@@ -9,7 +10,7 @@ namespace data {
  * forwards declaration required to avoid a recursive include
  **/
 class maze;
-enum generate_type;
+struct cell;
 }  // namespace data
 namespace args {
 /**
@@ -75,7 +76,7 @@ class generate_action : public action {
   bool stack;
 
   // generator type
-  data::generate_type _gen_type;
+  int _gen_type;
 
  public:
   /**
@@ -89,10 +90,22 @@ class generate_action : public action {
    * creates a generate_action based on the seed, width and
    * height being specified
    **/
-  generate_action(int seed, unsigned width, unsigned height, bool use_stack, data::generate_type type)
+  generate_action(int seed, unsigned width, unsigned height, bool use_stack, int type)
       : _seed(seed), _width(width), _height(height), stack(use_stack), _gen_type(type) {}
 
   virtual data::maze &do_action(data::maze &);
+};
+
+/************************************************************************/
+/* maze path finding                                                                     */
+/************************************************************************/
+class path_finding_action : public action {
+	virtual data::maze &do_action(data::maze &);
+
+private:
+	bool cell_valid(int x, int y, int width, int height);
+	bool is_finish_cell(data::maze& m, data::cell *cur_cell, data::cell *finish_cell);
+
 };
 
 /**

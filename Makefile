@@ -7,10 +7,10 @@
 ############################################################################
 
 #object files created as part of compilation
-OBJECTS=data/maze.o generators/recursivegen.o main.o args/action.o args/arg_processor.o \
+OBJECTS=data/maze.o generators/recursivegen.o generators/grow_tree_generator.o main.o args/action.o args/arg_processor.o \
 generators/recursivegen_stack.o
 #header files included in various files.
-HEADERS=data/maze.h generators/recursivegen.h args/action.h args/arg_processor.h constants/constants.h \
+HEADERS=data/maze.h generators/recursivegen.h generators/grow_tree_generator.h args/action.h args/arg_processor.h constants/constants.h \
 generators/recursivegen_stack.h
 
 #how do we create the binary for execution

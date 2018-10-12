@@ -2,7 +2,7 @@
 // array of valid argument strings that can be passed in from the
 // command line
 const std::string mazer2018::args::arg_processor::arg_strings
-    [mazer2018::args::arg_processor::NUM_OPTIONS] = {"--g", "--gs", "--sv",
+    [mazer2018::args::arg_processor::NUM_OPTIONS] = {"--gr", "--gp", "--pm", "--sv",
                                                      "--sb", "--lb"};
 
 /**
@@ -43,7 +43,7 @@ mazer2018::args::arg_processor::process(void) {
         option_type type = option_type(opt_count);
         // if we are not generating, there should be one argument
         // for the option
-        if (type != option_type::GENERATE && type != option_type::GENSTACK) {
+        if (type != option_type::GENERATE_RECURSIVE && type != option_type::GENERATE_PRIME && type != option_type::PATH_FINDING) {
           int distance = find_next_option(arguments, arg_count);
           if (distance != ONE_ARGUMENT) {
             std::ostringstream oss;
@@ -55,22 +55,30 @@ mazer2018::args::arg_processor::process(void) {
         }
         std::unique_ptr<action> newact;
         switch (type) {
-          case option_type::GENERATE: {
+          case option_type::GENERATE_RECURSIVE: {
             // a generate action was requested - we
             // implement this processing in a different
             // function
-            newact = process_generate_argument(arg_count, false);
+            newact = process_generate_argument(arg_count, false, 0);
             // need to move the unique_ptr onto the vector
             // as it is a move only type
             actions.push_back(std::move(newact));
           } break;
-          case option_type::GENSTACK: {
+          case option_type::GENERATE_PRIME: {
             // a generate action using the stack method
             // has been requested
-            newact = process_generate_argument(arg_count, true);
+            newact = process_generate_argument(arg_count, true, 1);
             actions.push_back(std::move(newact));
             break;
           }
+		  case option_type::PATH_FINDING: {
+			  // a generate action using the stack method
+			  // has been requested
+			  newact = std::make_unique<path_finding_action>();
+			  actions.push_back(std::move(newact));
+			  arg_count--;
+			  break;
+		  }
           case option_type::SAVE_VECTOR: {
             std::string name = arguments[arg_count];
             if (name.size() < EXTLEN ||
@@ -118,12 +126,15 @@ mazer2018::args::arg_processor::process(void) {
 
 std::string mazer2018::args::option_string(mazer2018::args::option_type type) {
   switch (type) {
-    case option_type::GENERATE:
-      return "generate";
+    case option_type::GENERATE_RECURSIVE:
+      return "generate recursive";
       break;
-    case option_type::GENSTACK:
-      return "generate using stack";
+    case option_type::GENERATE_PRIME:
+      return "generate prime";
       break;
+	case option_type::PATH_FINDING:
+		return "path finding";
+		break;
     case option_type::SAVE_VECTOR:
       return "save vector";
       break;
@@ -164,6 +175,16 @@ bool mazer2018::args::arg_processor::valid_dim(int val) {
   return true;
 }
 
+/************************************************************************/
+/* maze path finding                                                                     */
+/************************************************************************/
+std::unique_ptr<mazer2018::args::action>
+mazer2018::args::arg_processor::process_path_finding() {
+	std::unique_ptr<action> newact;
+	newact = std::make_unique<path_finding_action>();
+	return std::move(newact);
+}
+
 /**
  * handles the processing of a generate argument. Moved into a separate
  * function as it is a fairly complex process that was better moved to a
@@ -171,7 +192,7 @@ bool mazer2018::args::arg_processor::valid_dim(int val) {
  **/
 std::unique_ptr<mazer2018::args::action>
 mazer2018::args::arg_processor::process_generate_argument(int& arg_count,
-                                                          bool use_stack) {
+                                                          bool use_stack, int gen_type) {
   // this function returns a std::unique_ptr so that the memory will be
   // freed when it goes out of scope
   std::unique_ptr<action> newact;
@@ -258,6 +279,6 @@ mazer2018::args::arg_processor::process_generate_argument(int& arg_count,
       throw action_failed("invalid generation request");
     }
   }
-  newact = std::make_unique<generate_action>(seed, width, height, use_stack, mazer2018::data::generate_type::RECURSIVE);
+  newact = std::make_unique<generate_action>(seed, width, height, use_stack, gen_type);
   return std::move(newact);
 }

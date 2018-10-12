@@ -20,10 +20,12 @@ namespace args {
  * command line arguments parsed by the @ref arg_processor.
  **/
 enum class option_type {
-  /// an action to generate a maze
-  GENERATE,
-  /// generate a maze using a stack rather than recursion
-  GENSTACK,
+  /// an action to generate a maze with recursive
+  GENERATE_RECURSIVE,
+  /// an action to generate a maze with prime
+  GENERATE_PRIME,
+  /// maze path finding
+  PATH_FINDING,
   /// an action to save a maze as an svg file
   SAVE_VECTOR,
   /// an action to save a maze as a binary file
@@ -87,7 +89,7 @@ class arg_processor {
   /**
    * the number of different command line options available
    **/
-  static const int NUM_OPTIONS = 5;
+  static const int NUM_OPTIONS = 6;
   /**
    * the command line options that are available to be used
    **/
@@ -109,7 +111,12 @@ class arg_processor {
   /**
    * processes a generate request from the command line
    **/
-  std::unique_ptr<action> process_generate_argument(int&, bool);
+  std::unique_ptr<action> process_generate_argument(int&, bool, int gen_type);
+
+  /*
+  maze path finding
+  */
+  std::unique_ptr<action> process_path_finding();
 };
 }  // namespace args
 }  // namespace mazer2018

@@ -8,14 +8,15 @@ namespace mazer2018 {
 		class recursive_generator : public grow_tree_generator
 		{
 		public:
+			recursive_generator(data::maze& m, int seed, int width, int height) : grow_tree_generator(m, seed, width, height) {};
 
-			mazer2018::data::cell *get_next_cell() {};
+			mazer2018::data::cell *get_next_cell();
 		};
 
 		mazer2018::data::cell *recursive_generator::get_next_cell() {
-			//return maze_set.get_end();
-			return nullptr;
+			return maze_set.get_end();
 		}
+
 	}
 
 }
